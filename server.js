@@ -7,11 +7,10 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import indexRouter from "./routes/index.js";
 import moviesRouter from "./routes/movies.js";
-import mongoose from "mongoose";
+import {connectDB} from "./mongoConfig.js";
 
 // Constants
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = "mongodb://localhost:27017/sample_mflix";
 
 // Create http server
 const app = express();
@@ -26,8 +25,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join("public")));
 
+// Connect to MongoDB
+connectDB().catch(error => {
+  console.error("Failed to connect to the database", error);
+  process.exit(1);
+});
+
 app.use("/", indexRouter);
-app.use('/api', moviesRouter);
+app.use("/api", moviesRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -44,12 +50,6 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
-
-mongoose
-  .connect(MONGO_URI)
-  .catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
-  });
 
 // Start http server
 app.listen(PORT, () => {
