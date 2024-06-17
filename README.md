@@ -2,6 +2,6 @@ This repo contains some boilerplate to get you started in Node with Express
 
 `npm i`
 
-`npm i -g nodemon`
+`npm install --save-dev nodemon`
 
-`nodemon server.js`
+`npm run dev`

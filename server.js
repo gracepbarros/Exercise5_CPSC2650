@@ -6,9 +6,12 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import indexRouter from "./routes/index.js";
+import moviesRouter from "./routes/movies.js";
+import mongoose from "mongoose";
 
 // Constants
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = "mongodb://localhost:27017/sample_mflix";
 
 // Create http server
 const app = express();
@@ -24,6 +27,7 @@ app.use(cookieParser());
 app.use(express.static(path.join("public")));
 
 app.use("/", indexRouter);
+app.use('/api', moviesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -41,7 +45,13 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
+mongoose
+  .connect(MONGO_URI)
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+  });
+
 // Start http server
-app.listen(port, () => {
-  console.log(`Server started at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server started at http://localhost:${PORT}`);
 });
